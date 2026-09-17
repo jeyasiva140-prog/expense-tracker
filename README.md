@@ -27,12 +27,7 @@ HTML5 · Tailwind CSS · Vanilla JavaScript · Chart.js · LocalStorage
 
 ## Project structure
 - `index.html` — application UI
-- `js/app.js` — dashboard state, CRUD, rendering, charts, analytics, interactions
-- `js/shared.js` — shared LocalStorage state and utilities used by all separate pages
-- `add-expense.html` — separate Add Transaction page
-- `recent-transactions.html` — separate Recent Transactions page
-- `analysis.html` — separate Analysis page
-- `income.html`, `budgets.html`, `goals.html`, `settings.html` — supporting pages
+- `js/app.js` — state, CRUD, rendering, charts, analytics, interactions
 
 ## Future full-stack upgrades
 - Node.js/Express API
