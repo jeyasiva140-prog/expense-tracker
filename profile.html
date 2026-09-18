@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartExpense - Profile</title>
+
+    <script>
+        if (localStorage.getItem("smartExpense_theme") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+    <script>
+        tailwind = {
+            config: {
+                darkMode: "class"
+            }
+        };
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./js/theme.js"></script>
+
+    <style>
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(255, 236, 179, 0.7), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(191, 219, 254, 0.5), transparent 35%),
+                #f8fafc;
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.15), transparent 35%),
+                #020617;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.78);
+            border-color: rgba(148, 163, 184, 0.15);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        input {
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-100">
+
+    <main class="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-8">
+
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold">
+                    Profile
+                </h1>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Manage your profile information
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <button
+                    id="themeBtn"
+                    type="button"
+                    onclick="toggleTheme()"
+                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
+                    aria-label="Switch theme">
+                    ☾
+                </button>
+
+                <a
+                    href="index.html"
+                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
+                    Dashboard
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- Profile Card -->
+        <section class="glass rounded-3xl p-6 sm:p-8">
+
+            <!-- Profile Icon -->
+            <div class="flex flex-col items-center mb-8">
+
+                <div class="w-24 h-24 rounded-full bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center text-5xl">
+                    👤
+                </div>
+
+                <h2
+                    id="profileDisplayName"
+                    class="text-xl font-bold mt-4">
+                    User
+                </h2>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    SmartExpense User
+                </p>
+
+            </div>
+
+
+            <!-- Form -->
+            <form
+                id="profileForm"
+                class="space-y-5">
+
+                <!-- Name -->
+                <div>
+
+                    <label
+                        for="name"
+                        class="block text-sm font-semibold mb-2">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+                        required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+
+                </div>
+
+
+                <!-- Email -->
+                <div>
+
+                    <label
+                        for="email"
+                        class="block text-sm font-semibold mb-2">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+
+                </div>
+
+
+                <!-- Phone -->
+                <div>
+
+                    <label
+                        for="phone"
+                        class="block text-sm font-semibold mb-2">
+                        Phone
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="Enter your phone number"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+
+                </div>
+
+
+                <!-- Save Button -->
+                <div class="pt-3">
+
+                    <button
+                        type="submit"
+                        class="w-full px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
+                        Save Profile
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <script>
+        const PROFILE_KEY =
+            "smartExpense_profile";
+
+
+        const profileForm =
+            document.getElementById("profileForm");
+
+        const nameInput =
+            document.getElementById("name");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const phoneInput =
+            document.getElementById("phone");
+
+        const profileDisplayName =
+            document.getElementById("profileDisplayName");
+
+
+        /* Load saved profile */
+        function loadProfile() {
+
+            try {
+
+                const raw =
+                    localStorage.getItem(PROFILE_KEY);
+
+                if (!raw) {
+                    return;
+                }
+
+
+                const profile =
+                    JSON.parse(raw);
+
+
+                nameInput.value =
+                    profile.name || "";
+
+                emailInput.value =
+                    profile.email || "";
+
+                phoneInput.value =
+                    profile.phone || "";
+
+
+                if (profile.name) {
+
+                    profileDisplayName.textContent =
+                        profile.name;
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load profile:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* Save profile */
+        profileForm.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+
+                const name =
+                    nameInput.value.trim();
+
+                const email =
+                    emailInput.value.trim();
+
+                const phone =
+                    phoneInput.value.trim();
+
+
+                if (!name) {
+
+                    alert(
+                        "Please enter your name."
+                    );
+
+                    nameInput.focus();
+
+                    return;
+                }
+
+
+                const profile = {
+                    name: name,
+                    email: email,
+                    phone: phone
+                };
+
+
+                try {
+
+                    localStorage.setItem(
+                        PROFILE_KEY,
+                        JSON.stringify(profile)
+                    );
+
+
+                    profileDisplayName.textContent =
+                        name;
+
+
+                    alert(
+                        "Profile saved successfully!"
+                    );
+
+                } catch (error) {
+
+                    alert(
+                        "Unable to save profile."
+                    );
+
+                    console.error(error);
+
+                }
+
+            }
+        );
+
+
+        /* Load profile when page opens */
+        document.addEventListener(
+            "DOMContentLoaded",
+            loadProfile
+        );
+
+    </script>
+
+</body>
+</html>
