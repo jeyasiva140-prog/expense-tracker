@@ -800,11 +800,19 @@ function renderRecent(stateData) {
             .map(transaction => `
 
                 <div
+<<<<<<< HEAD
                     class="dashboard-recent-item flex items-center gap-3 p-3 rounded-2xl"
                 >
 
                     <div
                         class="dashboard-recent-icon w-10 h-10 rounded-xl grid place-items-center"
+=======
+                    class="flex items-center gap-3 p-3 rounded-2xl bg-white/60 dark:bg-slate-900/60"
+                >
+
+                    <div
+                        class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 grid place-items-center"
+>>>>>>> 639c6571d506d46d253e869762d5acaa8f2c553e
                     >
                         ${
                             transaction.type === "income"
@@ -827,7 +835,11 @@ function renderRecent(stateData) {
                         </p>
 
 
+<<<<<<< HEAD
                         <p class="dashboard-recent-meta text-xs">
+=======
+                        <p class="text-xs text-slate-500">
+>>>>>>> 639c6571d506d46d253e869762d5acaa8f2c553e
 
                             ${esc(
                                 transaction.category ||
