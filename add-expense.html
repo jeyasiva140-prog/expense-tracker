@@ -1,35 +1,462 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Add Transaction — SmartExpense</title><script>window.tailwind=window.tailwind||{};window.tailwind.config={darkMode:"class"};</script><script src="https://cdn.tailwindcss.com"></script><script src="./js/theme.js"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
-*{box-sizing:border-box}body{min-height:100vh;background:#f6f8fb;color:#0f172a;transition:.25s}.glass{background:rgba(255,255,255,.86);backdrop-filter:blur(18px);border:1px solid #e2e8f0}.card{transition:.25s}.card:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(15,23,42,.1)}
-html.dark,html.dark body{background:#070b14!important;color:#e5e7eb!important}html.dark .glass{background:#0f172a!important;border-color:#263449!important;color:#e5e7eb!important}html.dark .bg-white,html.dark .bg-slate-50{background:#111827!important}html.dark .bg-slate-100{background:#1e293b!important}html.dark .text-slate-800,html.dark .text-slate-900{color:#f1f5f9!important}html.dark .text-slate-500{color:#94a3b8!important}html.dark input,html.dark select,html.dark textarea{background:#111827!important;color:#f8fafc!important;border-color:#334155!important}html.dark .border-slate-200{border-color:#334155!important}html.dark .divide-slate-100>:not([hidden])~:not([hidden]){border-color:#263449!important}
-@media(min-width:1600px){body{font-size:18px}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-html.dark body{background:#070b14!important;color:#e5e7eb!important}
-html.dark .bg-white{background-color:#0f172a!important}
-html.dark .bg-slate-50{background-color:#0b1220!important}
-html.dark .bg-slate-100{background-color:#1e293b!important}
-html.dark .text-slate-900,html.dark .text-slate-800,html.dark .text-slate-700{color:#f8fafc!important}
-html.dark .text-slate-600{color:#cbd5e1!important}
-html.dark .text-slate-500{color:#94a3b8!important}
-html.dark .border-slate-200,html.dark .border-slate-300{border-color:#334155!important}
-html.dark input,html.dark select,html.dark textarea{background-color:#111827!important;color:#f8fafc!important;border-color:#334155!important}
-html.dark input::placeholder,html.dark textarea::placeholder{color:#64748b!important}
-html.dark .divide-slate-100>:not([hidden])~:not([hidden]){border-color:#263449!important}
-html.dark .shadow-sm,html.dark .shadow-lg{--tw-shadow-color:#0008}
-#themeBtn{transition:transform .2s ease,background .2s ease,color .2s ease}
-#themeBtn:hover{transform:rotate(12deg) scale(1.05)}
-</style></head><body><div class="max-w-[1900px] mx-auto min-h-screen px-4 sm:px-6 lg:px-10 py-5"><header class="flex items-center justify-between mb-7"><div><a href="index.html" class="font-black text-xl">SmartExpense</a><p class="text-xs text-slate-500">Dedicated expense entry</p></div><div class="flex gap-2"><button id="themeBtn" onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-white border border-slate-200">☼</button><a href="index.html" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold">Dashboard</a></div></header><div class="grid lg:grid-cols-3 gap-5"><section class="lg:col-span-2 glass rounded-3xl p-5 sm:p-8"><h1 class="text-3xl font-black">Add Transaction</h1><p class="text-sm text-slate-500 mt-1">Record a new expense. It will be available on the dashboard immediately.</p><form id="form" class="mt-7 space-y-4"><div class="grid sm:grid-cols-2 gap-4"><label class="text-sm font-bold">Amount<input id="amount" type="number" min="1" step=".01" required class="mt-1 w-full rounded-xl border border-slate-200 p-3" placeholder="0"></label><label class="text-sm font-bold">Date<input id="date" type="date" required class="mt-1 w-full rounded-xl border border-slate-200 p-3"></label></div><label class="text-sm font-bold block">Expense name<input id="description" required class="mt-1 w-full rounded-xl border border-slate-200 p-3" placeholder="e.g. Dinner"></label><div class="grid sm:grid-cols-2 gap-4"><label class="text-sm font-bold">Category<select id="category" class="mt-1 w-full rounded-xl border border-slate-200 p-3"></select></label><label class="text-sm font-bold">Payment method<select id="method" class="mt-1 w-full rounded-xl border border-slate-200 p-3"><option>UPI</option><option>Cash</option><option>Card</option><option>Bank transfer</option></select></label></div><label class="text-sm font-bold block">Notes<textarea id="notes" rows="3" class="mt-1 w-full rounded-xl border border-slate-200 p-3" placeholder="Optional"></textarea></label><button class="w-full py-3 rounded-xl bg-slate-900 text-white font-bold">Save transaction</button></form></section><aside class="glass rounded-3xl p-6 h-fit"><p class="text-xs font-bold text-indigo-600">THIS MONTH</p><p id="summary" class="text-3xl font-black mt-2"></p><p class="text-sm text-slate-500">Total expenses</p></aside></div></div><script>const CATEGORIES=[["Food","🍔"],["Transport","🚗"],["Shopping","🛍️"],["Bills","🏠"],["Entertainment","🎮"],["Travel","✈️"],["Health","💊"],["Education","📚"],["Others","📦"]];
-const KEY="smartExpense_v1";
-const DEFAULT_STATE={transactions:[{id:1,type:"income",amount:50000,description:"Monthly salary",category:"Salary",date:"2026-09-01",method:"Bank transfer"},{id:2,type:"expense",amount:850,description:"Groceries",category:"Food",date:"2026-09-02",method:"UPI"},{id:3,type:"expense",amount:420,description:"Fuel",category:"Transport",date:"2026-09-04",method:"Card"},{id:4,type:"expense",amount:1290,description:"Online shopping",category:"Shopping",date:"2026-09-06",method:"UPI"},{id:5,type:"expense",amount:650,description:"Electricity bill",category:"Bills",date:"2026-09-08",method:"Bank transfer"},{id:6,type:"expense",amount:320,description:"Lunch",category:"Food",date:"2026-09-10",method:"UPI"},{id:7,type:"expense",amount:550,description:"Movie & snacks",category:"Entertainment",date:"2026-09-12",method:"Card"}],budgets:{Food:5000,Transport:4000,Shopping:4000,Bills:8000,Entertainment:2500,Travel:6000,Health:3000,Education:3000,Others:2500},goals:[{id:1,name:"Emergency Fund",target:50000,current:19000,date:"2027-03-01"}],currency:"₹"};
-function state(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(DEFAULT_STATE)}catch(e){return structuredClone(DEFAULT_STATE)}}
-function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
-function today(){return new Date().toISOString().slice(0,10)}
-function month(s){return s.transactions.filter(t=>t.date?.slice(0,7)===today().slice(0,7))}
-function ex(s){return month(s).filter(t=>t.type==="expense")}
-function inc(s){return month(s).filter(t=>t.type==="income")}
-function total(a){return a.reduce((n,t)=>n+Number(t.amount||0),0)}
-function money(n,s){return `${s.currency}${Math.round(n).toLocaleString("en-IN")}`}
-function icon(c){return (CATEGORIES.find(x=>x[0]===c)||["","•"])[1]}
-function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function toggleTheme(){const dark=!document.documentElement.classList.contains("dark");document.documentElement.classList.toggle("dark",dark);localStorage.setItem("smartExpense_theme",dark?"dark":"light");const b=document.getElementById("themeBtn");if(b)b.textContent=dark?"☾":"☼"}
-(function(){if(localStorage.getItem("smartExpense_theme")==="dark")document.documentElement.classList.add("dark")})();
-const s=state();document.getElementById("date").value=today();document.getElementById("category").innerHTML=CATEGORIES.map(c=>`<option value="${c[0]}">${c[1]} ${c[0]}</option>`).join("");document.getElementById("summary").textContent=money(total(ex(s)),s);document.getElementById("form").onsubmit=e=>{e.preventDefault();s.transactions.push({id:Date.now(),type:"expense",amount:+document.getElementById("amount").value,description:document.getElementById("description").value.trim(),category:document.getElementById("category").value,date:document.getElementById("date").value,method:document.getElementById("method").value,notes:document.getElementById("notes").value.trim()});save(s);location.href="recent-transactions.html"};</script></body></html>
+    <title>SmartExpense - Add Expense</title>
+
+    <script>
+        if (localStorage.getItem("smartExpense_theme") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+    <script>
+        tailwind = {
+            config: {
+                darkMode: "class"
+            }
+        };
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./js/theme.js"></script>
+
+    <style>
+        body {
+             background: radial-gradient(
+                circle,
+                rgba(238, 174, 202, 1) 0%,
+                rgba(148, 187, 233, 1) 100%
+            );
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.15), transparent 35%),
+                #020617;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.78);
+            border-color: rgba(148, 163, 184, 0.15);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        input,
+        select,
+        textarea {
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-100">
+
+    <main class="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-8">
+
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold">
+                    Add Expense
+                </h1>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Record your daily spending
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <button
+                    id="themeBtn"
+                    type="button"
+                    onclick="toggleTheme()"
+                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
+                    aria-label="Switch theme">
+                    ☾
+                </button>
+
+                <a
+                    href="index.html"
+                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
+                    Dashboard
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- Main Card -->
+        <section class="glass rounded-3xl p-5 sm:p-8">
+
+            <div class="mb-7">
+                <h2 class="text-xl sm:text-2xl font-bold">
+                    Expense Details
+                </h2>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Enter the details of your expense below.
+                </p>
+            </div>
+
+
+            <form id="form" class="space-y-5">
+
+                <!-- Amount -->
+                <div>
+                    <label
+                        for="amount"
+                        class="block text-sm font-semibold mb-2">
+                        Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter amount"
+                        required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                </div>
+
+
+                <!-- Date -->
+                <div>
+                    <label
+                        for="date"
+                        class="block text-sm font-semibold mb-2">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                </div>
+
+
+                <!-- Description -->
+                <div>
+                    <label
+                        for="description"
+                        class="block text-sm font-semibold mb-2">
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
+                        id="description"
+                        placeholder="Example: Grocery shopping"
+                        required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                </div>
+
+
+                <!-- Category -->
+                <div>
+                    <label
+                        for="category"
+                        class="block text-sm font-semibold mb-2">
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                    </select>
+                </div>
+
+
+                <!-- Payment Method -->
+                <div>
+                    <label
+                        for="method"
+                        class="block text-sm font-semibold mb-2">
+                        Payment Method
+                    </label>
+
+                    <select
+                        id="method"
+                        required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+
+                        <option value="">Select payment method</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Card">Card</option>
+                        <option value="Bank transfer">Bank transfer</option>
+
+                    </select>
+                </div>
+
+
+                <!-- Notes -->
+                <div>
+                    <label
+                        for="notes"
+                        class="block text-sm font-semibold mb-2">
+                        Notes
+                    </label>
+
+                    <textarea
+                        id="notes"
+                        rows="4"
+                        placeholder="Optional notes"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white resize-none"></textarea>
+                </div>
+
+
+                <!-- Monthly Summary -->
+                <div
+                    id="summary"
+                    class="rounded-2xl p-5 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900">
+
+                    <div class="flex items-center justify-between gap-4">
+
+                        <div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">
+                                This month's expenses
+                            </p>
+
+                            <p
+                                id="monthlyExpense"
+                                class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                                ₹0
+                            </p>
+                        </div>
+
+                        <div class="text-3xl">
+                            💸
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-2">
+
+                    <button
+                        type="reset"
+                        id="expenseReset"
+                        class="w-full sm:w-auto px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 font-semibold bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800">
+                        Reset
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="w-full sm:flex-1 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
+                        Add Expense
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <!-- Shared application logic -->
+    <script src="./js/app.js"></script>
+
+
+    <!-- Page logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const form = document.getElementById("form");
+            const amountInput = document.getElementById("amount");
+            const dateInput = document.getElementById("date");
+            const descriptionInput = document.getElementById("description");
+            const categoryInput = document.getElementById("category");
+            const methodInput = document.getElementById("method");
+            const notesInput = document.getElementById("notes");
+            const monthlyExpense = document.getElementById("monthlyExpense");
+            const resetButton = document.getElementById("expenseReset");
+
+
+            /* Set today's date */
+            dateInput.value = today();
+
+
+            /* Load categories */
+            categoryInput.innerHTML =
+                '<option value="">Select category</option>' +
+                CATEGORIES.map(function (item) {
+                    return `
+                        <option value="${item[0]}">
+                            ${item[1]} ${item[0]}
+                        </option>
+                    `;
+                }).join("");
+
+
+            /* Update monthly expense */
+            function updateMonthlySummary() {
+
+                const data = readState();
+
+                const currentMonthExpenses = ex(data);
+
+                const amount = total(currentMonthExpenses);
+
+                monthlyExpense.textContent = money(
+                    amount,
+                    data.currency
+                );
+            }
+
+
+            updateMonthlySummary();
+
+
+            /* Add expense */
+            form.addEventListener("submit", function (event) {
+
+                event.preventDefault();
+
+
+                const amount = Number(amountInput.value);
+
+                const date = dateInput.value;
+
+                const description =
+                    descriptionInput.value.trim();
+
+                const category =
+                    categoryInput.value;
+
+                const method =
+                    methodInput.value;
+
+                const notes =
+                    notesInput.value.trim();
+
+
+                if (!amount || amount <= 0) {
+
+                    alert("Please enter a valid amount.");
+
+                    amountInput.focus();
+
+                    return;
+                }
+
+
+                if (!date) {
+
+                    alert("Please select a date.");
+
+                    dateInput.focus();
+
+                    return;
+                }
+
+
+                if (!description) {
+
+                    alert("Please enter a description.");
+
+                    descriptionInput.focus();
+
+                    return;
+                }
+
+
+                if (!category) {
+
+                    alert("Please select a category.");
+
+                    categoryInput.focus();
+
+                    return;
+                }
+
+
+                if (!method) {
+
+                    alert("Please select a payment method.");
+
+                    methodInput.focus();
+
+                    return;
+                }
+
+
+                addSharedTransaction({
+                    type: "expense",
+                    amount: amount,
+                    description: description,
+                    category: category,
+                    date: date,
+                    method: method,
+                    notes: notes
+                });
+
+
+                alert("Expense added successfully!");
+
+
+                window.location.href =
+                    "recent-transactions.html";
+            });
+
+
+            /* Reset form */
+            resetButton.addEventListener("click", function () {
+
+                setTimeout(function () {
+
+                    dateInput.value = today();
+
+                    updateMonthlySummary();
+
+                }, 0);
+
+            });
+
+
+            /* Update summary if data changes in another tab */
+            window.addEventListener("storage", function (event) {
+
+                if (event.key === STORAGE_KEY) {
+
+                    updateMonthlySummary();
+
+                }
+
+            });
+
+        });
+    </script>
+
+</body>
+</html>

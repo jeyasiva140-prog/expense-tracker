@@ -1,35 +1,523 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>See Analysis — SmartExpense</title><script>window.tailwind=window.tailwind||{};window.tailwind.config={darkMode:"class"};</script><script src="https://cdn.tailwindcss.com"></script><script src="./js/theme.js"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
-*{box-sizing:border-box}body{min-height:100vh;background:#f6f8fb;color:#0f172a;transition:.25s}.glass{background:rgba(255,255,255,.86);backdrop-filter:blur(18px);border:1px solid #e2e8f0}.card{transition:.25s}.card:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(15,23,42,.1)}
-html.dark,html.dark body{background:#070b14!important;color:#e5e7eb!important}html.dark .glass{background:#0f172a!important;border-color:#263449!important;color:#e5e7eb!important}html.dark .bg-white,html.dark .bg-slate-50{background:#111827!important}html.dark .bg-slate-100{background:#1e293b!important}html.dark .text-slate-800,html.dark .text-slate-900{color:#f1f5f9!important}html.dark .text-slate-500{color:#94a3b8!important}html.dark input,html.dark select,html.dark textarea{background:#111827!important;color:#f8fafc!important;border-color:#334155!important}html.dark .border-slate-200{border-color:#334155!important}html.dark .divide-slate-100>:not([hidden])~:not([hidden]){border-color:#263449!important}
-@media(min-width:1600px){body{font-size:18px}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-html.dark body{background:#070b14!important;color:#e5e7eb!important}
-html.dark .bg-white{background-color:#0f172a!important}
-html.dark .bg-slate-50{background-color:#0b1220!important}
-html.dark .bg-slate-100{background-color:#1e293b!important}
-html.dark .text-slate-900,html.dark .text-slate-800,html.dark .text-slate-700{color:#f8fafc!important}
-html.dark .text-slate-600{color:#cbd5e1!important}
-html.dark .text-slate-500{color:#94a3b8!important}
-html.dark .border-slate-200,html.dark .border-slate-300{border-color:#334155!important}
-html.dark input,html.dark select,html.dark textarea{background-color:#111827!important;color:#f8fafc!important;border-color:#334155!important}
-html.dark input::placeholder,html.dark textarea::placeholder{color:#64748b!important}
-html.dark .divide-slate-100>:not([hidden])~:not([hidden]){border-color:#263449!important}
-html.dark .shadow-sm,html.dark .shadow-lg{--tw-shadow-color:#0008}
-#themeBtn{transition:transform .2s ease,background .2s ease,color .2s ease}
-#themeBtn:hover{transform:rotate(12deg) scale(1.05)}
-</style></head><body><div class="max-w-[1900px] mx-auto min-h-screen px-4 sm:px-6 lg:px-10 py-5"><header class="flex items-center justify-between mb-7"><div><a href="index.html" class="font-black text-xl">SmartExpense</a><p class="text-xs text-slate-500">Dedicated analytics</p></div><div class="flex gap-2"><button id="themeBtn" onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-white border border-slate-200">☼</button><a href="index.html" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold">Dashboard</a></div></header><section><div class="mb-5"><h1 class="text-3xl font-black">See Analysis</h1><p class="text-sm text-slate-500 mt-1">Understand your spending with simple visual analytics.</p></div><div id="stats" class="grid grid-cols-2 xl:grid-cols-4 gap-3"></div><div class="grid lg:grid-cols-2 gap-5 mt-5"><div class="glass rounded-3xl p-5"><h2 class="font-bold mb-4">Income vs Expenses</h2><div class="h-72"><canvas id="cash"></canvas></div></div><div class="glass rounded-3xl p-5"><h2 class="font-bold mb-4">Category Spending</h2><div class="h-72"><canvas id="bars"></canvas></div></div></div></section></div><script>const CATEGORIES=[["Food","🍔"],["Transport","🚗"],["Shopping","🛍️"],["Bills","🏠"],["Entertainment","🎮"],["Travel","✈️"],["Health","💊"],["Education","📚"],["Others","📦"]];
-const KEY="smartExpense_v1";
-const DEFAULT_STATE={transactions:[{id:1,type:"income",amount:50000,description:"Monthly salary",category:"Salary",date:"2026-09-01",method:"Bank transfer"},{id:2,type:"expense",amount:850,description:"Groceries",category:"Food",date:"2026-09-02",method:"UPI"},{id:3,type:"expense",amount:420,description:"Fuel",category:"Transport",date:"2026-09-04",method:"Card"},{id:4,type:"expense",amount:1290,description:"Online shopping",category:"Shopping",date:"2026-09-06",method:"UPI"},{id:5,type:"expense",amount:650,description:"Electricity bill",category:"Bills",date:"2026-09-08",method:"Bank transfer"},{id:6,type:"expense",amount:320,description:"Lunch",category:"Food",date:"2026-09-10",method:"UPI"},{id:7,type:"expense",amount:550,description:"Movie & snacks",category:"Entertainment",date:"2026-09-12",method:"Card"}],budgets:{Food:5000,Transport:4000,Shopping:4000,Bills:8000,Entertainment:2500,Travel:6000,Health:3000,Education:3000,Others:2500},goals:[{id:1,name:"Emergency Fund",target:50000,current:19000,date:"2027-03-01"}],currency:"₹"};
-function state(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(DEFAULT_STATE)}catch(e){return structuredClone(DEFAULT_STATE)}}
-function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
-function today(){return new Date().toISOString().slice(0,10)}
-function month(s){return s.transactions.filter(t=>t.date?.slice(0,7)===today().slice(0,7))}
-function ex(s){return month(s).filter(t=>t.type==="expense")}
-function inc(s){return month(s).filter(t=>t.type==="income")}
-function total(a){return a.reduce((n,t)=>n+Number(t.amount||0),0)}
-function money(n,s){return `${s.currency}${Math.round(n).toLocaleString("en-IN")}`}
-function icon(c){return (CATEGORIES.find(x=>x[0]===c)||["","•"])[1]}
-function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function toggleTheme(){const dark=!document.documentElement.classList.contains("dark");document.documentElement.classList.toggle("dark",dark);localStorage.setItem("smartExpense_theme",dark?"dark":"light");const b=document.getElementById("themeBtn");if(b)b.textContent=dark?"☾":"☼"}
-(function(){if(localStorage.getItem("smartExpense_theme")==="dark")document.documentElement.classList.add("dark")})();
-let s=state(),a=ex(s),i=inc(s),g={};a.forEach(t=>g[t.category]=(g[t.category]||0)+t.amount);stats.innerHTML=[["Income",money(total(i),s)],["Expenses",money(total(a),s)],["Savings",money(Math.max(0,total(i)-total(a)),s)],["Transactions",s.transactions.length]].map(x=>`<div class="glass rounded-2xl p-4"><p class="text-xs text-slate-500">${x[0]}</p><p class="text-xl font-black mt-1">${x[1]}</p></div>`).join("");new Chart(cash,{type:"bar",data:{labels:["Income","Expenses","Savings"],datasets:[{data:[total(i),total(a),Math.max(0,total(i)-total(a))],borderRadius:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});new Chart(bars,{type:"bar",data:{labels:Object.keys(g),datasets:[{data:Object.values(g),borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});</script></body></html>
+    <title>SmartExpense - Analysis</title>
+
+    <script>
+        if (localStorage.getItem("smartExpense_theme") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+    <script>
+        tailwind = {
+            config: {
+                darkMode: "class"
+            }
+        };
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./js/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+             background: radial-gradient(
+                circle,
+                rgba(238, 174, 202, 1) 0%,
+                rgba(148, 187, 233, 1) 100%
+            );
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.15), transparent 35%),
+                #020617;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.78);
+            border-color: rgba(148, 163, 184, 0.15);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-100">
+
+    <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-8">
+
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold">
+                    Analysis
+                </h1>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Understand your spending and income
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <button
+                    id="themeBtn"
+                    type="button"
+                    onclick="toggleTheme()"
+                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
+                    aria-label="Switch theme">
+                    ☾
+                </button>
+
+                <a
+                    href="index.html"
+                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
+                    Dashboard
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- Statistics -->
+        <section
+            id="stats"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        </section>
+
+
+        <!-- Cash Flow Chart -->
+        <section class="glass rounded-3xl p-5 sm:p-6 mb-6">
+
+            <div class="mb-5">
+
+                <h2 class="text-xl font-bold">
+                    Cash Flow
+                </h2>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Current month's income, expenses and savings
+                </p>
+
+            </div>
+
+            <div class="h-80">
+                <canvas id="cash"></canvas>
+            </div>
+
+        </section>
+
+
+        <!-- Category Chart -->
+        <section class="glass rounded-3xl p-5 sm:p-6">
+
+            <div class="mb-5">
+
+                <h2 class="text-xl font-bold">
+                    Category Spending
+                </h2>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Current month's expenses by category
+                </p>
+
+            </div>
+
+            <div class="h-80">
+                <canvas id="bars"></canvas>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Shared application logic -->
+    <script src="./js/app.js"></script>
+
+
+    <script>
+        let cashChart = null;
+        let categoryChart = null;
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            renderAnalysis();
+
+
+            window.addEventListener(
+                "pageshow",
+                renderAnalysis
+            );
+
+
+            window.addEventListener(
+                "storage",
+                function (event) {
+
+                    if (event.key === STORAGE_KEY) {
+                        renderAnalysis();
+                    }
+
+                }
+            );
+
+        });
+
+
+        function renderAnalysis() {
+
+            const data = readState();
+
+            const incomeTransactions =
+                inc(data);
+
+            const expenseTransactions =
+                ex(data);
+
+            const income =
+                total(incomeTransactions);
+
+            const expenses =
+                total(expenseTransactions);
+
+            const savings =
+                income - expenses;
+
+
+            /* Statistics */
+
+            const stats =
+                document.getElementById("stats");
+
+
+            const savingsClass =
+                savings >= 0
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-rose-600 dark:text-rose-400";
+
+
+            stats.innerHTML = `
+
+                <div class="glass rounded-3xl p-5">
+
+                    <div class="text-3xl mb-3">
+                        💰
+                    </div>
+
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        Income
+                    </p>
+
+                    <p class="text-2xl font-bold mt-1">
+                        ${money(income, data.currency)}
+                    </p>
+
+                </div>
+
+
+                <div class="glass rounded-3xl p-5">
+
+                    <div class="text-3xl mb-3">
+                        💸
+                    </div>
+
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        Expenses
+                    </p>
+
+                    <p class="text-2xl font-bold mt-1">
+                        ${money(expenses, data.currency)}
+                    </p>
+
+                </div>
+
+
+                <div class="glass rounded-3xl p-5">
+
+                    <div class="text-3xl mb-3">
+                        💎
+                    </div>
+
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        Savings
+                    </p>
+
+                    <p class="text-2xl font-bold mt-1 ${savingsClass}">
+                        ${money(savings, data.currency)}
+                    </p>
+
+                </div>
+
+
+                <div class="glass rounded-3xl p-5">
+
+                    <div class="text-3xl mb-3">
+                        📊
+                    </div>
+
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        Transactions
+                    </p>
+
+                    <p class="text-2xl font-bold mt-1">
+                        ${incomeTransactions.length + expenseTransactions.length}
+                    </p>
+
+                </div>
+
+            `;
+
+
+            renderCashChart(
+                income,
+                expenses,
+                savings,
+                data
+            );
+
+
+            renderCategoryChart(
+                expenseTransactions,
+                data
+            );
+
+        }
+
+
+        function renderCashChart(
+            income,
+            expenses,
+            savings,
+            data
+        ) {
+
+            const canvas =
+                document.getElementById("cash");
+
+
+            if (!canvas || typeof Chart === "undefined") {
+                return;
+            }
+
+
+            if (cashChart) {
+                cashChart.destroy();
+            }
+
+
+            cashChart = new Chart(
+                canvas,
+                {
+                    type: "bar",
+
+                    data: {
+                        labels: [
+                            "Income",
+                            "Expenses",
+                            "Savings"
+                        ],
+
+                        datasets: [
+                            {
+                                label: "Amount",
+
+                                data: [
+                                    income,
+                                    expenses,
+                                    savings
+                                ],
+
+                                borderWidth: 1,
+
+                                borderRadius: 8
+                            }
+                        ]
+                    },
+
+                    options: {
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+
+                                        return money(
+                                            context.raw,
+                                            data.currency
+                                        );
+
+                                    }
+                                }
+                            }
+                        },
+
+                        scales: {
+
+                            y: {
+                                beginAtZero: true,
+
+                                ticks: {
+                                    callback: function (value) {
+
+                                        return money(
+                                            value,
+                                            data.currency
+                                        );
+
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        function renderCategoryChart(
+            transactions,
+            data
+        ) {
+
+            const canvas =
+                document.getElementById("bars");
+
+
+            if (!canvas || typeof Chart === "undefined") {
+                return;
+            }
+
+
+            if (categoryChart) {
+                categoryChart.destroy();
+            }
+
+
+            const categoryTotals = {};
+
+
+            transactions.forEach(function (transaction) {
+
+                const category =
+                    transaction.category || "Others";
+
+                categoryTotals[category] =
+                    (categoryTotals[category] || 0) +
+                    Number(transaction.amount || 0);
+
+            });
+
+
+            const labels =
+                Object.keys(categoryTotals);
+
+
+            const values =
+                Object.values(categoryTotals);
+
+
+            categoryChart = new Chart(
+                canvas,
+                {
+                    type: "bar",
+
+                    data: {
+                        labels: labels,
+
+                        datasets: [
+                            {
+                                label: "Spending",
+
+                                data: values,
+
+                                borderWidth: 1,
+
+                                borderRadius: 8
+                            }
+                        ]
+                    },
+
+                    options: {
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+
+                                        return money(
+                                            context.raw,
+                                            data.currency
+                                        );
+
+                                    }
+                                }
+                            }
+                        },
+
+                        scales: {
+
+                            y: {
+                                beginAtZero: true,
+
+                                ticks: {
+                                    callback: function (value) {
+
+                                        return money(
+                                            value,
+                                            data.currency
+                                        );
+
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>

@@ -1,1 +1,213 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>SmartExpense — Settings</title><script>if(localStorage.getItem('smartExpense_theme')==='dark')document.documentElement.classList.add('dark');</script><script>tailwind={config:{darkMode:'class'}};</script><script src="https://cdn.tailwindcss.com"></script><script src="./js/theme.js"></script><style>body{background:#f6f8fb}html.dark body{background:#070b14;color:#e5e7eb}html.dark .bg-white{background:#0f172a!important}html.dark .bg-slate-50{background:#111827!important}.glass{background:rgba(255,255,255,.82);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.8)}html.dark .glass{background:rgba(15,23,42,.94);border-color:#263449}html.dark input,html.dark select{background:#111827;color:#fff;border-color:#334155}</style></head><body class="min-h-screen"><main class="max-w-4xl mx-auto p-5 sm:p-8"><header class="flex items-center justify-between mb-8"><div><a href="index.html" class="font-black text-xl">SmartExpense</a><h1 class="text-3xl font-black mt-5">Settings</h1><p class="text-slate-500 mt-1">Customize your expense tracker.</p></div><button id="themeBtn" onclick="toggleTheme()" class="w-11 h-11 rounded-xl bg-white border border-slate-200">☼</button></header><div class="glass rounded-3xl p-6 space-y-5"><div class="flex items-center justify-between"><div><h2 class="font-bold">Appearance</h2><p class="text-sm text-slate-500">Switch between light and dark mode.</p></div><button onclick="toggleTheme()" class="px-5 py-3 rounded-xl bg-slate-900 text-white font-bold">Toggle mode</button></div><div class="flex gap-3"><button onclick="localStorage.removeItem('smartExpense_v1');location.reload()" class="px-4 py-3 rounded-xl bg-rose-50 text-rose-600 font-bold">Clear all data</button><a href="index.html" class="px-4 py-3 rounded-xl bg-slate-100 font-bold">← Dashboard</a></div></div></main><script src="./js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartExpense - Settings</title>
+
+    <script>
+        if (localStorage.getItem("smartExpense_theme") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+    <script>
+        tailwind = {
+            config: {
+                darkMode: "class"
+            }
+        };
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./js/theme.js"></script>
+
+    <style>
+        body {
+             background: radial-gradient(
+                circle,
+                rgba(238, 174, 202, 1) 0%,
+                rgba(148, 187, 233, 1) 100%
+            );
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.15), transparent 35%),
+                #020617;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.78);
+            border-color: rgba(148, 163, 184, 0.15);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-100">
+
+    <main class="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-8">
+
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold">
+                    Settings
+                </h1>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Manage your SmartExpense preferences
+                </p>
+            </div>
+
+            
+
+        </header>
+
+
+        <div class="space-y-6">
+
+            <!-- Appearance -->
+            <section class="glass rounded-3xl p-6">
+
+                <div class="flex items-center justify-between gap-4">
+
+                    <div>
+
+                        <h2 class="text-lg font-bold">
+                            Appearance
+                        </h2>
+
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            Change between light and dark mode.
+                        </p>
+
+                    </div>
+
+                    <button
+                        id="settingsThemeBtn"
+                        type="button"
+                        onclick="toggleTheme()"
+                        class="px-5 py-3 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-semibold">
+                        Toggle Theme
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Currency -->
+            <section class="glass rounded-3xl p-6">
+
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+                    <div>
+
+                        <h2 class="text-lg font-bold">
+                            Currency
+                        </h2>
+
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            Select the currency used throughout the dashboard.
+                        </p>
+
+                    </div>
+
+
+                    <select
+                        id="currencySelect"
+                        class="w-full sm:w-48 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+
+                        <option value="₹">₹ Indian Rupee</option>
+                        <option value="$">$ US Dollar</option>
+                        <option value="£">£ British Pound</option>
+                        <option value="€">€ Euro</option>
+
+                    </select>
+
+                </div>
+
+            </section>
+
+
+            <!-- Data Management -->
+            <section class="glass rounded-3xl p-6">
+
+                <div>
+
+                    <h2 class="text-lg font-bold">
+                        Data Management
+                    </h2>
+
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Clear all saved financial transactions, budgets and goals.
+                    </p>
+
+                </div>
+
+
+                <div class="mt-5">
+
+                    <button
+                        id="clearBtn"
+                        type="button"
+                        class="px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold">
+                        Clear All Data
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Dashboard -->
+            <section class="glass rounded-3xl p-6">
+
+                <div class="flex items-center justify-between gap-4">
+
+                    <div>
+
+                        <h2 class="text-lg font-bold">
+                            Dashboard
+                        </h2>
+
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            Return to your SmartExpense dashboard.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="index.html"
+                        class="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
+                        Open Dashboard
+                    </a>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- Shared application logic -->
+    <script src="./js/app.js"></script>
+
+</body>
+</html>
