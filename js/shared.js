@@ -62,11 +62,7 @@ function nav(active){
   ["income.html","↗","Income"],["budgets.html","◴","Budgets"],["goals.html","◎","Goals"],["settings.html","⚙","Settings"]
  ];
  const desktop=document.getElementById("desktopNav"),mobile=document.getElementById("mobileNav");
-<<<<<<< HEAD
  const make=i=>`<a href="${i[0]}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white ${active===i[0]?"bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white":""}"><span>${i[1]}</span>${i[2]}</a>`;
-=======
- const make=i=>`<a href="${i[0]}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-800 ${active===i[0]?"bg-slate-100 dark:bg-slate-800":""}"><span>${i[1]}</span>${i[2]}</a>`;
->>>>>>> 639c6571d506d46d253e869762d5acaa8f2c553e
  if(desktop)desktop.innerHTML=items.map(make).join("");
  if(mobile)mobile.innerHTML=items.slice(0,5).map(make).join("");
 }
