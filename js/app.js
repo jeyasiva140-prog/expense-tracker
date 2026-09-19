@@ -273,6 +273,7 @@ function readState() {
 
 function writeState(state) {
 
+<<<<<<< HEAD
     const normalized = normalizeState(state);
 
     localStorage.setItem(
@@ -286,6 +287,11 @@ function writeState(state) {
         new CustomEvent("smartExpense:update", {
             detail: normalized
         })
+=======
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(state)
+>>>>>>> 4d6a4b44b773a86ff663b6763c19c6be3c3d6091
     );
 
 }
@@ -533,10 +539,69 @@ function deleteSharedTransaction(id) {
 
 /* =========================================================
    Theme
+<<<<<<< HEAD
    ---------------------------------------------------------
    Theme state is handled only by js/theme.js.
    ========================================================= */
 
+=======
+   ========================================================= */
+
+function applyAppTheme() {
+
+    const dark =
+        localStorage.getItem(THEME_KEY) === "dark";
+
+    document.documentElement.classList.toggle(
+        "dark",
+        dark
+    );
+
+
+    document
+        .querySelectorAll(
+            "#themeBtn, #settingsThemeBtn"
+        )
+        .forEach(button => {
+
+            button.textContent =
+                dark ? "☀" : "☾";
+
+            button.setAttribute(
+                "aria-label",
+                dark
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+            );
+
+            button.title =
+                dark
+                    ? "Switch to light mode"
+                    : "Switch to dark mode";
+
+        });
+
+}
+
+
+function toggleAppTheme() {
+
+    const dark =
+        document.documentElement.classList.contains(
+            "dark"
+        );
+
+    localStorage.setItem(
+        THEME_KEY,
+        dark ? "light" : "dark"
+    );
+
+    applyAppTheme();
+
+}
+
+
+>>>>>>> 4d6a4b44b773a86ff663b6763c19c6be3c3d6091
 /* =========================================================
    Dashboard Navigation
    ========================================================= */
@@ -1673,6 +1738,7 @@ function updateProfileButton() {
    ========================================================= */
 
 window.addEventListener(
+<<<<<<< HEAD
     "smartExpense:update",
     function () {
         renderDashboard();
@@ -1682,6 +1748,8 @@ window.addEventListener(
 
 
 window.addEventListener(
+=======
+>>>>>>> 4d6a4b44b773a86ff663b6763c19c6be3c3d6091
     "storage",
     function (event) {
 
