@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartExpense - Recent Transactions</title>
+
+    <script>
+        if (localStorage.getItem("smartExpense_theme") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+    <script>
+        tailwind = window.tailwind || {};
+        tailwind.config = {
+            darkMode: "class"
+        };
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./js/theme.js"></script>
+    <style>
+/* SmartExpense shared theme compatibility */
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+html:not(.dark) body { color: #0f172a; }
+html.dark body { color: #f8fafc; }
+
+/* Make common slate text classes readable in both themes. */
+html:not(.dark) .text-slate-800 { color: #1e293b !important; }
+html:not(.dark) .text-slate-700 { color: #334155 !important; }
+html:not(.dark) .text-slate-600 { color: #475569 !important; }
+html:not(.dark) .text-slate-500 { color: #64748b !important; }
+html:not(.dark) .text-slate-400 { color: #94a3b8 !important; }
+
+html.dark .text-slate-800 { color: #e2e8f0 !important; }
+html.dark .text-slate-700 { color: #e2e8f0 !important; }
+html.dark .text-slate-600 { color: #cbd5e1 !important; }
+html.dark .text-slate-500 { color: #94a3b8 !important; }
+html.dark .text-slate-400 { color: #94a3b8 !important; }
+
+html:not(.dark) input,
+html:not(.dark) select,
+html:not(.dark) textarea {
+  color: #0f172a;
+  background-color: #fff;
+}
+html.dark input,
+html.dark select,
+html.dark textarea {
+  color: #f8fafc;
+  background-color: #0f172a;
+}
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder { color: #64748b; opacity: 1; }
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
+
+    </style>
+
+    <style>
+        body {
+            background:
+                 radial-gradient(
+                circle,
+                rgba(238, 174, 202, 1) 0%,
+                rgba(148, 187, 233, 1) 100%
+            );
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.15), transparent 35%),
+                #020617;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.78);
+            border-color: rgba(148, 163, 184, 0.15);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        input,
+        select {
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-100">
+
+    <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-8">
+
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold">
+                    Recent Transactions
+                </h1>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    View and manage your transactions
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <button
+                    id="themeBtn"
+                    type="button"
+                    onclick="toggleTheme()"
+                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
+                    aria-label="Switch theme">
+                    ☾
+                </button>
+
+                <a
+                    href="index.html"
+                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
+                    Dashboard
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- Filters -->
+        <section class="glass rounded-3xl p-5 sm:p-6 mb-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- Search -->
+                <div>
+                    <label
+                        for="search"
+                        class="block text-sm font-semibold mb-2">
+                        Search
+                    </label>
+
+                    <input
+                        type="text"
+                        id="search"
+                        placeholder="Search transactions..."
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                </div>
+
+
+                <!-- Category -->
+                <div>
+                    <label
+                        for="cat"
+                        class="block text-sm font-semibold mb-2">
+                        Category
+                    </label>
+
+                    <select
+                        id="cat"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                    </select>
+                </div>
+
+
+                <!-- Type -->
+                <div>
+                    <label
+                        for="type"
+                        class="block text-sm font-semibold mb-2">
+                        Type
+                    </label>
+
+                    <select
+                        id="type"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+
+                        <option value="all">
+                            All transactions
+                        </option>
+
+                        <option value="income">
+                            Income
+                        </option>
+
+                        <option value="expense">
+                            Expense
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Transaction List -->
+        <section class="glass rounded-3xl p-5 sm:p-6">
+
+            <div class="flex items-center justify-between mb-5">
+
+                <div>
+                    <h2 class="text-xl font-bold">
+                        Transactions
+                    </h2>
+
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Your latest income and expenses
+                    </p>
+                </div>
+
+                <a
+                    href="add-expense.html"
+                    class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold">
+                    + Add Expense
+                </a>
+
+            </div>
+
+
+            <div
+                id="list"
+                class="space-y-3">
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Shared application logic -->
+    <script src="./js/app.js"></script>
+
+
+    <!-- Page logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const searchInput =
+                document.getElementById("search");
+
+            const categorySelect =
+                document.getElementById("cat");
+
+            const typeSelect =
+                document.getElementById("type");
+
+            const list =
+                document.getElementById("list");
+
+
+            /* Load categories */
+            categorySelect.innerHTML =
+                '<option value="all">All categories</option>' +
+                CATEGORIES.map(function (item) {
+
+                    return `
+                        <option value="${esc(item[0])}">
+                            ${item[1]} ${esc(item[0])}
+                        </option>
+                    `;
+
+                }).join("");
+
+
+            /* Render transactions */
+            function render() {
+
+                const data = readState();
+
+                const search =
+                    searchInput.value
+                        .trim()
+                        .toLowerCase();
+
+                const selectedCategory =
+                    categorySelect.value;
+
+                const selectedType =
+                    typeSelect.value;
+
+
+                let transactions =
+                    Array.isArray(data.transactions)
+                        ? [...data.transactions]
+                        : [];
+
+
+                transactions = transactions
+                    .filter(function (transaction) {
+
+                        const matchesSearch =
+                            !search ||
+                            String(transaction.description || "")
+                                .toLowerCase()
+                                .includes(search) ||
+                            String(transaction.category || "")
+                                .toLowerCase()
+                                .includes(search) ||
+                            String(transaction.method || "")
+                                .toLowerCase()
+                                .includes(search);
+
+                        const matchesCategory =
+                            selectedCategory === "all" ||
+                            transaction.category === selectedCategory;
+
+                        const matchesType =
+                            selectedType === "all" ||
+                            transaction.type === selectedType;
+
+                        return (
+                            matchesSearch &&
+                            matchesCategory &&
+                            matchesType
+                        );
+
+                    })
+                    .sort(function (a, b) {
+
+                        const dateCompare =
+                            String(b.date || "")
+                                .localeCompare(
+                                    String(a.date || "")
+                                );
+
+                        if (dateCompare !== 0) {
+                            return dateCompare;
+                        }
+
+                        return Number(b.id || 0) -
+                               Number(a.id || 0);
+
+                    });
+
+
+                if (!transactions.length) {
+
+                    list.innerHTML = `
+                        <div class="text-center py-12">
+
+                            <div class="text-5xl mb-4">
+                                📭
+                            </div>
+
+                            <h3 class="text-lg font-bold">
+                                No transactions found
+                            </h3>
+
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                Try changing your filters or add a new transaction.
+                            </p>
+
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                list.innerHTML =
+                    transactions.map(function (transaction) {
+
+                        const isIncome =
+                            transaction.type === "income";
+
+                        const amountClass =
+                            isIncome
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-rose-600 dark:text-rose-400";
+
+                        const sign =
+                            isIncome ? "+" : "-";
+
+                        const categoryIcon =
+                            icon(transaction.category);
+
+
+                        return `
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200/70 dark:border-slate-700/70">
+
+                                <div class="flex items-center gap-4 min-w-0">
+
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl flex-shrink-0">
+                                        ${categoryIcon}
+                                    </div>
+
+                                    <div class="min-w-0">
+
+                                        <h3 class="font-semibold truncate">
+                                            ${esc(transaction.description || "Untitled")}
+                                        </h3>
+
+                                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                            ${esc(transaction.category || "Others")}
+                                            •
+                                            ${esc(transaction.method || "N/A")}
+                                            •
+                                            ${esc(transaction.date || "")}
+                                        </p>
+
+                                        ${
+                                            transaction.notes
+                                                ? `
+                                                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">
+                                                        ${esc(transaction.notes)}
+                                                    </p>
+                                                  `
+                                                : ""
+                                        }
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="flex items-center justify-between sm:justify-end gap-4">
+
+                                    <span class="font-bold ${amountClass}">
+                                        ${sign}${money(transaction.amount, data.currency)}
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        class="delete-btn px-3 py-2 rounded-lg text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                                        data-id="${transaction.id}">
+                                        Delete
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        `;
+
+                    }).join("");
+
+
+                /* Delete buttons */
+                list.querySelectorAll(".delete-btn")
+                    .forEach(function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                const id =
+                                    Number(button.dataset.id);
+
+                                const confirmed =
+                                    confirm(
+                                        "Are you sure you want to delete this transaction?"
+                                    );
+
+                                if (!confirmed) {
+                                    return;
+                                }
+
+                                deleteSharedTransaction(id);
+
+                                render();
+
+                            }
+                        );
+
+                    });
+
+            }
+
+
+            /* Filters */
+            searchInput.addEventListener(
+                "input",
+                render
+            );
+
+            categorySelect.addEventListener(
+                "change",
+                render
+            );
+
+            typeSelect.addEventListener(
+                "change",
+                render
+            );
+
+
+            /* Initial render */
+            render();
+
+
+            /* Refresh when returning to this page */
+            window.addEventListener(
+                "pageshow",
+                render
+            );
+
+
+            /* Refresh if another tab changes data */
+            window.addEventListener(
+                "storage",
+                function (event) {
+
+                    if (event.key === STORAGE_KEY) {
+                        render();
+                    }
+
+                }
+            );
+
+        });
+    </script>
+
+</body>
+</html>

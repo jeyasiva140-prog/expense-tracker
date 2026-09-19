@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartExpense - Goals</title>
+
+    <script>
+        if (localStorage.getItem("smartExpense_theme") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+    <script>
+        tailwind = window.tailwind || {};
+        tailwind.config = {
+            darkMode: "class"
+        };
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./js/theme.js"></script>
+    <style>
+/* SmartExpense shared theme compatibility */
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+html:not(.dark) body { color: #0f172a; }
+html.dark body { color: #f8fafc; }
+
+/* Make common slate text classes readable in both themes. */
+html:not(.dark) .text-slate-800 { color: #1e293b !important; }
+html:not(.dark) .text-slate-700 { color: #334155 !important; }
+html:not(.dark) .text-slate-600 { color: #475569 !important; }
+html:not(.dark) .text-slate-500 { color: #64748b !important; }
+html:not(.dark) .text-slate-400 { color: #94a3b8 !important; }
+
+html.dark .text-slate-800 { color: #e2e8f0 !important; }
+html.dark .text-slate-700 { color: #e2e8f0 !important; }
+html.dark .text-slate-600 { color: #cbd5e1 !important; }
+html.dark .text-slate-500 { color: #94a3b8 !important; }
+html.dark .text-slate-400 { color: #94a3b8 !important; }
+
+html:not(.dark) input,
+html:not(.dark) select,
+html:not(.dark) textarea {
+  color: #0f172a;
+  background-color: #fff;
+}
+html.dark input,
+html.dark select,
+html.dark textarea {
+  color: #f8fafc;
+  background-color: #0f172a;
+}
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder { color: #64748b; opacity: 1; }
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
+
+    </style>
+
+    <style>
+        body {
+             background: radial-gradient(
+                circle,
+                rgba(238, 174, 202, 1) 0%,
+                rgba(148, 187, 233, 1) 100%
+            );
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.15), transparent 35%),
+                #020617;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.78);
+            border-color: rgba(148, 163, 184, 0.15);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-100">
+
+    <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-8">
+
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold">
+                    Goals
+                </h1>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Track your financial savings goals
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <button
+                    id="themeBtn"
+                    type="button"
+                    onclick="toggleTheme()"
+                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
+                    aria-label="Switch theme">
+                    ☾
+                </button>
+
+                <a
+                    href="index.html"
+                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
+                    Dashboard
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- Goals -->
+        <section
+            id="goalGrid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        </section>
+
+    </main>
+
+
+    <!-- Shared application logic -->
+    <script src="./js/app.js"></script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            renderGoals();
+
+
+            window.addEventListener(
+                "pageshow",
+                renderGoals
+            );
+
+
+            window.addEventListener(
+                "storage",
+                function (event) {
+
+                    if (event.key === STORAGE_KEY) {
+                        renderGoals();
+                    }
+
+                }
+            );
+
+        });
+
+
+        function renderGoals() {
+
+            const data = readState();
+
+            const goalGrid =
+                document.getElementById("goalGrid");
+
+
+            const goals =
+                Array.isArray(data.goals)
+                    ? data.goals
+                    : [];
+
+
+            if (!goals.length) {
+
+                goalGrid.innerHTML = `
+                    <div class="glass rounded-3xl p-8 text-center col-span-full">
+
+                        <div class="text-5xl mb-4">
+                            🎯
+                        </div>
+
+                        <h2 class="text-xl font-bold">
+                            No goals yet
+                        </h2>
+
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                            Create a savings goal to start tracking your progress.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            goalGrid.innerHTML =
+                goals.map(function (goal) {
+
+                    const current =
+                        Math.max(
+                            0,
+                            Number(goal.current) || 0
+                        );
+
+
+                    const target =
+                        Math.max(
+                            0,
+                            Number(goal.target) || 0
+                        );
+
+
+                    const percentage =
+                        target > 0
+                            ? Math.round(
+                                (current / target) * 100
+                            )
+                            : 0;
+
+
+                    const safePercentage =
+                        Math.min(
+                            100,
+                            Math.max(0, percentage)
+                        );
+
+
+                    const completed =
+                        target > 0 &&
+                        current >= target;
+
+
+                    const remaining =
+                        Math.max(
+                            0,
+                            target - current
+                        );
+
+
+                    return `
+                        <div class="glass rounded-3xl p-5">
+
+                            <div class="flex items-center justify-between mb-5">
+
+                                <div class="flex items-center gap-3">
+
+                                    <div class="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center text-xl">
+                                        🎯
+                                    </div>
+
+                                    <div>
+
+                                        <h2 class="font-bold">
+                                            ${esc(goal.name || "Savings Goal")}
+                                        </h2>
+
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">
+                                            ${goal.date
+                                                ? "Target: " + esc(goal.date)
+                                                : "Savings goal"}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                                <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                    ${safePercentage}%
+                                </span>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <div class="flex justify-between text-sm mb-2">
+
+                                    <span class="text-slate-500 dark:text-slate-400">
+                                        Saved
+                                    </span>
+
+                                    <span class="font-semibold">
+                                        ${money(current, data.currency)}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="flex justify-between text-sm">
+
+                                    <span class="text-slate-500 dark:text-slate-400">
+                                        Target
+                                    </span>
+
+                                    <span class="font-semibold">
+                                        ${money(target, data.currency)}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+
+                                <div
+                                    class="h-full rounded-full bg-indigo-600"
+                                    style="width: ${safePercentage}%">
+                                </div>
+
+                            </div>
+
+
+                            <div class="mt-4">
+
+                                ${
+                                    completed
+
+                                        ? `
+                                            <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                                                🎉 Goal completed!
+                                            </p>
+                                          `
+
+                                        : `
+                                            <p class="text-sm text-slate-500 dark:text-slate-400">
+                                                ${money(remaining, data.currency)}
+                                                remaining
+                                            </p>
+                                          `
+                                }
+
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("");
+
+        }
+
+    </script>
+
+</body>
+</html>
