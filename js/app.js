@@ -273,25 +273,9 @@ function readState() {
 
 function writeState(state) {
 
-<<<<<<< HEAD
-    const normalized = normalizeState(state);
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(normalized)
-    );
-
-    // The storage event does not fire in the same tab that made the change.
-    // Dispatch a local event so every component refreshes immediately.
-    window.dispatchEvent(
-        new CustomEvent("smartExpense:update", {
-            detail: normalized
-        })
-=======
     localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify(state)
->>>>>>> 4d6a4b44b773a86ff663b6763c19c6be3c3d6091
     );
 
 }
@@ -539,12 +523,6 @@ function deleteSharedTransaction(id) {
 
 /* =========================================================
    Theme
-<<<<<<< HEAD
-   ---------------------------------------------------------
-   Theme state is handled only by js/theme.js.
-   ========================================================= */
-
-=======
    ========================================================= */
 
 function applyAppTheme() {
@@ -601,7 +579,6 @@ function toggleAppTheme() {
 }
 
 
->>>>>>> 4d6a4b44b773a86ff663b6763c19c6be3c3d6091
 /* =========================================================
    Dashboard Navigation
    ========================================================= */
@@ -1286,6 +1263,61 @@ function renderInsight(
    Dashboard
    ========================================================= */
 
+function renderDashboardBudgets(stateData) {
+    const grid = document.getElementById("budgetGrid");
+    if (!grid) return;
+
+    const budgets = stateData.budgets || {};
+    const transactions = ex(stateData);
+    const entries = Object.entries(budgets).slice(0, 6);
+
+    if (!entries.length) {
+        grid.innerHTML = '<div class="glass rounded-3xl p-6 text-center col-span-full text-slate-500">No budgets available.</div>';
+        return;
+    }
+
+    grid.innerHTML = entries.map(function ([category, limit]) {
+        const budget = Number(limit) || 0;
+        const spent = transactions.filter(t => t.category === category).reduce((sum, t) => sum + Number(t.amount || 0), 0);
+        const percent = budget > 0 ? Math.round((spent / budget) * 100) : 0;
+        const width = Math.min(100, Math.max(0, percent));
+        const status = percent > 100 ? "Budget exceeded" : percent >= 80 ? "Close to limit" : "Within budget";
+        return `<div class="glass rounded-3xl p-5">
+            <div class="flex items-center justify-between gap-3">
+                <div><h3 class="font-bold">${esc(category)}</h3><p class="text-xs text-slate-500 dark:text-slate-400">${money(spent, stateData.currency)} of ${money(budget, stateData.currency)}</p></div>
+                <span class="text-sm font-bold">${percent}%</span>
+            </div>
+            <div class="mt-4 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"><div class="h-full bg-indigo-500" style="width:${width}%"></div></div>
+            <p class="text-xs mt-2 text-slate-500 dark:text-slate-400">${status}</p>
+        </div>`;
+    }).join("");
+}
+
+function renderDashboardGoals(stateData) {
+    const grid = document.getElementById("goalGrid");
+    if (!grid) return;
+
+    const goals = Array.isArray(stateData.goals) ? stateData.goals : [];
+    if (!goals.length) {
+        grid.innerHTML = '<div class="glass rounded-3xl p-6 text-center col-span-full text-slate-500">No savings goals yet.</div>';
+        return;
+    }
+
+    grid.innerHTML = goals.slice(0, 4).map(function (goal) {
+        const current = Math.max(0, Number(goal.current) || 0);
+        const target = Math.max(0, Number(goal.target) || 0);
+        const percent = target > 0 ? Math.round((current / target) * 100) : 0;
+        const width = Math.min(100, Math.max(0, percent));
+        return `<div class="glass rounded-3xl p-5">
+            <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 grid place-items-center">🎯</div><h3 class="font-bold">${esc(goal.name || "Savings Goal")}</h3></div>
+            <p class="text-2xl font-black mt-4">${money(current, stateData.currency)}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">of ${money(target, stateData.currency)}</p>
+            <div class="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"><div class="h-full bg-indigo-500" style="width:${width}%"></div></div>
+            <p class="text-xs mt-2 text-slate-500 dark:text-slate-400">${percent}% complete</p>
+        </div>`;
+    }).join("");
+}
+
 function renderDashboard() {
 
     const stateData =
@@ -1408,6 +1440,10 @@ function renderDashboard() {
     );
 
 
+    renderDashboardBudgets(stateData);
+
+    renderDashboardGoals(stateData);
+
     renderRecent(stateData);
 
     renderCategoryChart(stateData);
@@ -1428,55 +1464,97 @@ function renderDashboard() {
 
 function setupDashboardActions() {
 
-    const addButton =
-        document.getElementById(
-            "addBtn"
-        );
+    const modal = document.getElementById("modal");
+    const form = document.getElementById("transactionForm");
+    const closeModal = document.getElementById("closeModal");
+    const addButton = document.getElementById("addBtn");
+    const mobileAdd = document.getElementById("mobileAdd");
+    const typeInput = document.getElementById("txType");
+    const amountInput = document.getElementById("txAmount");
+    const descriptionInput = document.getElementById("txDescription");
+    const categoryInput = document.getElementById("txCategory");
+    const methodInput = document.getElementById("txMethod");
+    const dateInput = document.getElementById("txDate");
 
+    function openModal(type) {
+        if (!modal) return;
+        if (typeInput && type) typeInput.value = type;
+        if (dateInput && !dateInput.value) dateInput.value = today();
+        if (categoryInput && !categoryInput.options.length) {
+            categoryInput.innerHTML = CATEGORIES.map(function (item) {
+                return `<option value="${esc(item[0])}">${item[1]} ${esc(item[0])}</option>`;
+            }).join("");
+        }
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        if (amountInput) amountInput.focus();
+    }
+
+    function hideModal() {
+        if (!modal) return;
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
 
     if (addButton) {
-
-        const link =
-            document.createElement("a");
-
-        link.href =
-            "add-expense.html";
-
-        link.className =
-            addButton.className;
-
-        link.textContent =
-            "+ Add transaction";
-
-        addButton.replaceWith(link);
-
+        addButton.addEventListener("click", function () {
+            openModal("expense");
+        });
     }
-
-
-    const mobileAdd =
-        document.getElementById(
-            "mobileAdd"
-        );
-
 
     if (mobileAdd) {
-
-        const link =
-            document.createElement("a");
-
-        link.href =
-            "add-expense.html";
-
-        link.className =
-            mobileAdd.className;
-
-        link.innerHTML =
-            mobileAdd.innerHTML;
-
-        mobileAdd.replaceWith(link);
-
+        mobileAdd.addEventListener("click", function () {
+            openModal("expense");
+        });
     }
 
+    if (closeModal) closeModal.addEventListener("click", hideModal);
+
+    if (modal) {
+        modal.addEventListener("click", function (event) {
+            if (event.target === modal) hideModal();
+        });
+    }
+
+    if (form) {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const amount = Number(amountInput ? amountInput.value : 0);
+            const description = descriptionInput ? descriptionInput.value.trim() : "";
+            const category = categoryInput ? categoryInput.value : "";
+            const method = methodInput ? methodInput.value : "";
+            const date = dateInput ? dateInput.value : "";
+
+            if (!Number.isFinite(amount) || amount <= 0) {
+                alert("Please enter a valid positive amount.");
+                return;
+            }
+            if (!description || !category || !method || !date) {
+                alert("Please complete all required transaction fields.");
+                return;
+            }
+
+            try {
+                addSharedTransaction({
+                    type: typeInput && typeInput.value === "income" ? "income" : "expense",
+                    amount,
+                    description,
+                    category,
+                    method,
+                    date
+                });
+
+                form.reset();
+                if (dateInput) dateInput.value = today();
+                hideModal();
+                renderDashboard();
+            } catch (error) {
+                console.error("Transaction save failed:", error);
+                alert(error.message || "Unable to save transaction.");
+            }
+        });
+    }
 
     document
         .querySelectorAll(
@@ -1484,22 +1562,13 @@ function setupDashboardActions() {
         )
         .forEach(element => {
 
-            const link =
-                document.createElement("a");
-
-            link.href =
-                "recent-transactions.html";
-
-            link.className =
-                element.className;
-
-            link.textContent =
-                element.textContent;
-
+            const link = document.createElement("a");
+            link.href = "recent-transactions.html";
+            link.className = element.className;
+            link.textContent = element.textContent;
             element.replaceWith(link);
 
         });
-
 
     document
         .querySelectorAll(
@@ -1577,6 +1646,46 @@ function setupCurrency() {
 /* =========================================================
    Settings
    ========================================================= */
+
+function setupBudgetGoalActions() {
+
+    const budgetButton = document.getElementById("budgetBtn");
+    if (budgetButton) {
+        budgetButton.addEventListener("click", function () {
+            const category = prompt("Enter budget category (e.g. Food, Transport):");
+            if (!category) return;
+            const amount = Number(prompt("Enter monthly budget amount:"));
+            if (!Number.isFinite(amount) || amount <= 0) {
+                alert("Please enter a valid positive budget amount.");
+                return;
+            }
+            const data = readState();
+            data.budgets[category.trim()] = amount;
+            writeState(data);
+            renderDashboard();
+            alert("Budget saved successfully.");
+        });
+    }
+
+    const goalButton = document.getElementById("goalBtn");
+    if (goalButton) {
+        goalButton.addEventListener("click", function () {
+            const name = prompt("Enter savings goal name:");
+            if (!name || !name.trim()) return;
+            const target = Number(prompt("Enter target amount:"));
+            if (!Number.isFinite(target) || target <= 0) {
+                alert("Please enter a valid positive target amount.");
+                return;
+            }
+            const data = readState();
+            data.goals.push({ id: Date.now() + Math.floor(Math.random() * 1000), name: name.trim(), target, current: 0, date: today() });
+            writeState(data);
+            renderDashboard();
+            alert("Savings goal created successfully.");
+        });
+    }
+
+}
 
 function setupSettings() {
 
@@ -1738,18 +1847,6 @@ function updateProfileButton() {
    ========================================================= */
 
 window.addEventListener(
-<<<<<<< HEAD
-    "smartExpense:update",
-    function () {
-        renderDashboard();
-        updateProfileButton();
-    }
-);
-
-
-window.addEventListener(
-=======
->>>>>>> 4d6a4b44b773a86ff663b6763c19c6be3c3d6091
     "storage",
     function (event) {
 
@@ -1804,6 +1901,8 @@ document.addEventListener(
         setupCurrency();
 
         setupSettings();
+
+        setupBudgetGoalActions();
 
         updateProfileButton();
 
