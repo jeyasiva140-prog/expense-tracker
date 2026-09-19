@@ -1,28 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"/>
 
-    <title>SmartExpense - Analysis</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/> <title> SmartExpense - Analysis </title>
 
-    <script>
-        if (localStorage.getItem("smartExpense_theme") === "dark") {
+  <script>
+
+   if (localStorage.getItem("smartExpense_theme") === "dark") {
+
             document.documentElement.classList.add("dark");
+
         }
-    </script>
+  </script>
+  <script>
 
-    <script>
-        tailwind = window.tailwind || {};
+   tailwind = window.tailwind || {};
+
         tailwind.config = {
-            darkMode: "class"
-        };
-    </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="./js/theme.js"></script>
-    <style>
-/* SmartExpense shared theme compatibility */
+            darkMode: "class"
+
+        };
+  </script>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <script src="./js/theme.js">
+  </script>
+  <style>
+   /* SmartExpense shared theme compatibility */
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
 
@@ -58,12 +61,11 @@ html:not(.dark) input::placeholder,
 html:not(.dark) textarea::placeholder { color: #64748b; opacity: 1; }
 html.dark input::placeholder,
 html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
-
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        body {
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+  </script>
+  <style>
+   body {
              background: radial-gradient(
                 circle,
                 rgba(238, 174, 202, 1) 0%,
@@ -92,108 +94,47 @@ html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
             border-color: rgba(148, 163, 184, 0.15);
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
         }
-    </style>
-</head>
-
-<body class="text-slate-800 dark:text-slate-100">
-
-    <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-
-        <!-- Header -->
-        <header class="flex items-center justify-between mb-8">
-
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold">
-                    Analysis
-                </h1>
-
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Understand your spending and income
-                </p>
-            </div>
-
-            <div class="flex items-center gap-2">
-
-                <button
-                    id="themeBtn"
-                    type="button"
-                    onclick="toggleTheme()"
-                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
-                    aria-label="Switch theme">
-                    ☾
-                </button>
-
-                <a
-                    href="index.html"
-                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
-                    Dashboard
-                </a>
-
-            </div>
-
-        </header>
-
-
-        <!-- Statistics -->
-        <section
-            id="stats"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        </section>
-
-
-        <!-- Cash Flow Chart -->
-        <section class="glass rounded-3xl p-5 sm:p-6 mb-6">
-
-            <div class="mb-5">
-
-                <h2 class="text-xl font-bold">
-                    Cash Flow
-                </h2>
-
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Current month's income, expenses and savings
-                </p>
-
-            </div>
-
-            <div class="h-80">
-                <canvas id="cash"></canvas>
-            </div>
-
-        </section>
-
-
-        <!-- Category Chart -->
-        <section class="glass rounded-3xl p-5 sm:p-6">
-
-            <div class="mb-5">
-
-                <h2 class="text-xl font-bold">
-                    Category Spending
-                </h2>
-
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Current month's expenses by category
-                </p>
-
-            </div>
-
-            <div class="h-80">
-                <canvas id="bars"></canvas>
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- Shared application logic -->
-    <script src="./js/app.js"></script>
-
-
-    <script>
-        let cashChart = null;
+  </style>
+</head> <body class="text-slate-800 dark:text-slate-100"> <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+<!-- Header --> <header class="flex items-center justify-between mb-8"> <div>
+<h1 class="text-2xl sm:text-3xl font-bold"> Analysis </h1> <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+Understand your spending and income </p> </div> <div class="flex items-center gap-2">
+<button aria-label="Switch theme" class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg" id="themeBtn" onclick="toggleTheme()" type="button">
+☾ </button>
+<a class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold" href="index.html">
+Dashboard </a> </div> </header> <!-- Statistics -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="stats"> </section>
+<!-- Cash Flow Chart --> <section class="glass rounded-3xl p-5 sm:p-6 mb-6"> <div class="mb-5">
+<h2 class="text-xl font-bold"> Cash Flow </h2> <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+Current month's income, expenses and savings </p> </div> <div class="h-80"> <canvas id="cash"> </canvas> </div>
+</section> <!-- Category Chart --> <section class="glass rounded-3xl p-5 sm:p-6"> <div class="mb-5">
+<h2 class="text-xl font-bold"> Category Spending </h2> <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+Current month's expenses by category </p> </div> <div class="h-80"> <canvas id="bars"> </canvas> </div> </section>
+</main> <!-- Shared application logic -->
+  <script src="./js/app.js">
+  </script>
+  <script>
+   let cashChart = null;
         let categoryChart = null;
+
+        function chartTheme() {
+            const dark = document.documentElement.classList.contains("dark");
+            return {
+                text: dark ? "#e2e8f0" : "#334155",
+                grid: dark ? "rgba(148,163,184,.16)" : "rgba(100,116,139,.16)"
+            };
+        }
+
+        function applyChartTheme(chart) {
+            const c = chartTheme();
+            chart.options.plugins.legend.labels = { color: c.text };
+            Object.values(chart.options.scales || {}).forEach(scale => {
+                scale.ticks = { ...(scale.ticks || {}), color: c.text };
+                scale.grid = { ...(scale.grid || {}), color: c.grid };
+                scale.border = { ...(scale.border || {}), color: c.grid };
+            });
+            chart.update("none");
+        }
 
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -205,6 +146,10 @@ html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
                 "pageshow",
                 renderAnalysis
             );
+
+            window.addEventListener("storage", function (event) {
+                if (event.key === "smartExpense_theme") renderAnalysis();
+            });
 
 
             window.addEventListener(
@@ -438,6 +383,7 @@ html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
 
                 }
             );
+            applyChartTheme(cashChart);
 
         }
 
@@ -541,21 +487,14 @@ html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
                                             value,
                                             data.currency
                                         );
-
                                     }
                                 }
                             }
-
                         }
-
                     }
-
                 }
             );
-
+            applyChartTheme(categoryChart);
         }
-
-    </script>
-
-</body>
-</html>
+  </script>
+</body> </html>

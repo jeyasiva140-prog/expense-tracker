@@ -1,273 +1,480 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"/>
 
-    <title>SmartExpense - Income</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/> <title> SmartExpense - Income </title>
 
-    <script>
-        if (localStorage.getItem("smartExpense_theme") === "dark") {
+  <script>
+
+   if (localStorage.getItem("smartExpense_theme") === "dark") {
+
             document.documentElement.classList.add("dark");
+
         }
-    </script>
+  </script>
+  <script>
 
-    <script>
-        tailwind = window.tailwind || {};
+   tailwind = window.tailwind || {};
+
         tailwind.config = {
-            darkMode: "class"
-        };
-    </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="./js/theme.js"></script>
-    <style>
-/* SmartExpense shared theme compatibility */
+            darkMode: "class"
+
+        };
+  </script>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <script src="./js/theme.js">
+  </script>
+  <style>
+
+   /* SmartExpense shared theme compatibility */
+
 html { color-scheme: light; }
+
 html.dark { color-scheme: dark; }
 
+
 html:not(.dark) body { color: #0f172a; }
+
 html.dark body { color: #f8fafc; }
 
+
 /* Make common slate text classes readable in both themes. */
+
 html:not(.dark) .text-slate-800 { color: #1e293b !important; }
+
 html:not(.dark) .text-slate-700 { color: #334155 !important; }
+
 html:not(.dark) .text-slate-600 { color: #475569 !important; }
+
 html:not(.dark) .text-slate-500 { color: #64748b !important; }
+
 html:not(.dark) .text-slate-400 { color: #94a3b8 !important; }
 
+
 html.dark .text-slate-800 { color: #e2e8f0 !important; }
+
 html.dark .text-slate-700 { color: #e2e8f0 !important; }
+
 html.dark .text-slate-600 { color: #cbd5e1 !important; }
+
 html.dark .text-slate-500 { color: #94a3b8 !important; }
+
 html.dark .text-slate-400 { color: #94a3b8 !important; }
 
+
 html:not(.dark) input,
+
 html:not(.dark) select,
+
 html:not(.dark) textarea {
+
   color: #0f172a;
+
   background-color: #fff;
+
 }
+
 html.dark input,
+
 html.dark select,
+
 html.dark textarea {
+
   color: #f8fafc;
+
   background-color: #0f172a;
+
 }
+
 html:not(.dark) input::placeholder,
+
 html:not(.dark) textarea::placeholder { color: #64748b; opacity: 1; }
+
 html.dark input::placeholder,
+
 html.dark textarea::placeholder { color: #94a3b8; opacity: 1; }
+  </style>
+  <style>
 
-    </style>
+   body {
 
-    <style>
-        body {
              background: radial-gradient(
+
                 circle,
+
                 rgba(238, 174, 202, 1) 0%,
+
                 rgba(148, 187, 233, 1) 100%
+
             );
+
             min-height: 100vh;
+
         }
+
 
         .dark body {
+
             background:
+
                 radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+
                 radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.15), transparent 35%),
+
                 #020617;
+
         }
+
 
         .glass {
+
             background: rgba(255, 255, 255, 0.78);
+
             backdrop-filter: blur(14px);
+
             -webkit-backdrop-filter: blur(14px);
+
             border: 1px solid rgba(255, 255, 255, 0.7);
+
             box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+
         }
+
 
         .dark .glass {
+
             background: rgba(15, 23, 42, 0.78);
+
             border-color: rgba(148, 163, 184, 0.15);
+
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+
         }
-    </style>
-</head>
+  </style>
+</head> <body class="text-slate-800 dark:text-slate-100"> <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
 
-<body class="text-slate-800 dark:text-slate-100">
+<!-- Header --> <header class="flex items-center justify-between mb-8"> <div>
 
-    <main class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+<h1 class="text-2xl sm:text-3xl font-bold"> Income </h1> <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
 
-        <!-- Header -->
-        <header class="flex items-center justify-between mb-8">
+Track your income for this month </p> </div> <div class="flex items-center gap-2">
 
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold">
-                    Income
-                </h1>
+<button aria-label="Switch theme" class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg" id="themeBtn" onclick="toggleTheme()" type="button">
 
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Track your income for this month
-                </p>
-            </div>
+☾ </button>
 
-            <div class="flex items-center gap-2">
+<a class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold" href="index.html">
 
-                <button
-                    id="themeBtn"
-                    type="button"
-                    onclick="toggleTheme()"
-                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
-                    aria-label="Switch theme">
-                    ☾
-                </button>
+Dashboard </a> </div> </header> <!-- Income Cards -->
 
-                <a
-                    href="index.html"
-                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
-                    Dashboard
-                </a>
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="incomeGrid"> </section> </main>
 
-            </div>
+<!-- Shared application logic -->
 
-        </header>
+  <script src="./js/app.js">
+  </script>
+  <script>
 
+   document.addEventListener("DOMContentLoaded", function () {
 
-        <!-- Income Cards -->
-        <section
-            id="incomeGrid"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        </section>
-
-    </main>
-
-
-    <!-- Shared application logic -->
-    <script src="./js/app.js"></script>
-
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
 
             renderIncome();
 
 
+
             window.addEventListener(
+
                 "pageshow",
+
                 renderIncome
+
             );
 
 
+
             window.addEventListener(
+
                 "storage",
+
                 function (event) {
 
+
                     if (event.key === STORAGE_KEY) {
+
                         renderIncome();
+
                     }
 
+
                 }
+
             );
+
 
         });
 
 
+
         function renderIncome() {
+
 
             const data = readState();
 
+
             const incomeGrid =
+
                 document.getElementById("incomeGrid");
 
 
+
             const transactions =
+
                 inc(data);
+
 
 
             const incomeGroups = {};
 
 
+
             transactions.forEach(function (transaction) {
 
+
                 const category =
+
                     transaction.category || "Income";
 
 
+
                 incomeGroups[category] =
+
                     (incomeGroups[category] || 0) +
+
                     Number(transaction.amount || 0);
+
 
             });
 
 
+
             const groups =
+
                 Object.entries(incomeGroups);
+
 
 
             if (!groups.length) {
 
+
                 incomeGrid.innerHTML = `
+
                     <div class="glass rounded-3xl p-8 text-center col-span-full">
 
+
                         <div class="text-5xl mb-4">
+
                             💰
+
                         </div>
 
+
                         <h2 class="text-xl font-bold">
+
                             No income transactions yet
+
                         </h2>
 
+
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+
                             Your current month's income will appear here.
+
                         </p>
 
+
                     </div>
+
                 `;
 
+
                 return;
+
             }
 
 
+
             incomeGrid.innerHTML =
+
                 groups.map(function ([category, amount]) {
 
+
                     return `
+
                         <div class="glass rounded-3xl p-6">
+
 
                             <div class="flex items-center justify-between">
 
+
                                 <div>
 
+
                                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-2xl mb-4">
+
                                         💰
+
                                     </div>
 
+
                                     <h2 class="text-lg font-bold">
+
                                         ${esc(category)}
+
                                     </h2>
 
+
                                 </div>
+
 
                             </div>
 
 
+
                             <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-4">
+
                                 ${money(amount, data.currency)}
+
                             </p>
+
 
 
                             <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+
                                 Income this month
+
                             </p>
 
+
                         </div>
+
                     `;
+
 
                 }).join("");
 
+
         }
+  </script>
 
-    </script>
 
-</body>
-</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body> </html>

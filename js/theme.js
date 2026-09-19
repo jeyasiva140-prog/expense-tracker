@@ -14,11 +14,6 @@
         root.classList.toggle("dark", dark);
         root.setAttribute("data-theme", dark ? "dark" : "light");
 
-        if (document.body) {
-            document.body.classList.toggle("dark", dark);
-            document.body.setAttribute("data-theme", dark ? "dark" : "light");
-        }
-
         document.querySelectorAll("#themeBtn, #settingsThemeBtn").forEach((button) => {
             button.textContent = dark ? "☀" : "☾";
             button.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
