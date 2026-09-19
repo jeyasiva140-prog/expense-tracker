@@ -25,10 +25,11 @@
 
     <style>
         body {
-            background:
-                radial-gradient(circle at top left, rgba(255, 236, 179, 0.7), transparent 35%),
-                radial-gradient(circle at bottom right, rgba(191, 219, 254, 0.5), transparent 35%),
-                #f8fafc;
+             background: radial-gradient(
+                circle,
+                rgba(238, 174, 202, 1) 0%,
+                rgba(148, 187, 233, 1) 100%
+            );
             min-height: 100vh;
         }
 
@@ -72,24 +73,7 @@
                 </p>
             </div>
 
-            <div class="flex items-center gap-2">
-
-                <button
-                    id="themeBtn"
-                    type="button"
-                    onclick="toggleTheme()"
-                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center text-lg"
-                    aria-label="Switch theme">
-                    ☾
-                </button>
-
-                <a
-                    href="index.html"
-                    class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-semibold">
-                    Dashboard
-                </a>
-
-            </div>
+            
 
         </header>
 

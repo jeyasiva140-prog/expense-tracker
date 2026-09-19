@@ -1776,3 +1776,33 @@ document.addEventListener(
 
     }
 );
+// ===============================
+// Dynamic Greeting
+// ===============================
+
+function updateGreeting() {
+    const greetingElement = document.getElementById("greeting");
+
+    if (!greetingElement) return;
+
+    const hour = new Date().getHours();
+
+    if (hour >= 5 && hour < 12) {
+        greetingElement.textContent = "Good Morning 👋";
+    }
+    else if (hour >= 12 && hour < 17) {
+        greetingElement.textContent = "Good Afternoon 👋";
+    }
+    else if (hour >= 17 && hour < 21) {
+        greetingElement.textContent = "Good Evening 👋";
+    }
+    else {
+        greetingElement.textContent = "Good Night 🌙";
+    }
+}
+
+// Run when page loads
+updateGreeting();
+
+// Check every minute
+setInterval(updateGreeting, 60000);
